@@ -31,9 +31,15 @@ export class App implements OnInit {
       .get<AdviceResponse>('https://api.adviceslip.com/advice', {
         timeout: 5000,
       })
-      .subscribe((data) => {
-        this.advice.set(data.slip.advice);
-        this.isLoading.set(false);
+      .subscribe({
+        next: (data) => {
+          this.advice.set(data.slip.advice);
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error(error);
+          this.isLoading.set(false);
+        },
       });
   }
 }
