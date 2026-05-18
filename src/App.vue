@@ -1,27 +1,27 @@
 <template>
   <main>
     <h1>Advice App</h1>
-    <p>{{ isLoading ? "Loading..." : advice }}</p>
-    <button @click="getAdvice" :disabled="isLoading">Get Advice</button>
+    <p>{{ isFetching ? "Loading..." : advice }}</p>
+    <button @click="() => refetch()" :disabled="isFetching">Get Advice</button>
   </main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { useQuery } from "@tanstack/vue-query";
 
-const advice = ref("Advice ...");
-const isLoading = ref(false);
-
-async function getAdvice() {
-  isLoading.value = true;
+async function fetchAdvice() {
   const response = await fetch("https://api.adviceslip.com/advice");
   const data = await response.json();
-  advice.value = data.slip.advice;
-  isLoading.value = false;
+  return data.slip.advice as string;
 }
 
-onMounted(() => {
-  getAdvice();
+const {
+  data: advice,
+  isFetching,
+  refetch,
+} = useQuery({
+  queryKey: ["advice"],
+  queryFn: fetchAdvice,
 });
 </script>
 
