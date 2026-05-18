@@ -1,5 +1,5 @@
 <main>
   <h1>Advice App</h1>
-  <p>{{ isLoading() ? 'Loading...' : advice() }}</p>
-  <button (click)="getAdvice()" [disabled]="isLoading()">Get Advice</button>
+  <p>{{ adviceQuery.isPending() ? 'Loading...' : adviceQuery.data() }}</p>
+  <button (click)="adviceQuery.refetch()" [disabled]="adviceQuery.isFetching()">Get Advice</button>
 </main>
