@@ -29,6 +29,7 @@ export class App implements OnInit {
     this.http
       .get<AdviceResponse>('https://api.adviceslip.com/advice', {
         timeout: 5000,
+        headers: { 'X-Loading-Key': 'advice' },
       })
       .pipe(
         catchError((error) => {

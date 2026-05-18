@@ -1,5 +1,5 @@
 <main>
   <h1>Advice App</h1>
-  <p>{{ loadingService.loading() ? 'Loading...' : advice() }}</p>
-  <button (click)="getAdvice()" [disabled]="loadingService.loading()">Get Advice</button>
+  <p>{{ loadingService.loading('advice')() ? 'Loading...' : advice() }}</p>
+  <button (click)="getAdvice()" [disabled]="loadingService.loading('advice')()">Get Advice</button>
 </main>
