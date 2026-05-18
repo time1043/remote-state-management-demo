@@ -1,28 +1,27 @@
 <template>
   <main>
     <h1>Advice App</h1>
-    <p>{{ isLoading ? "Loading..." : advice }}</p>
-    <button @click="getAdvice" :disabled="isLoading">Get Advice</button>
+    <p>{{ isValidating ? "Loading..." : advice }}</p>
+    <button @click="() => getAdvice()" :disabled="isValidating">
+      Get Advice
+    </button>
   </main>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed } from "vue";
+import useSWRV from "swrv";
 
-const advice = ref("Advice ...");
-const isLoading = ref(false);
+const fetcher = (...args: Parameters<typeof fetch>) =>
+  fetch(...args).then((res) => res.json());
 
-async function getAdvice() {
-  isLoading.value = true;
-  const response = await fetch("https://api.adviceslip.com/advice");
-  const data = await response.json();
-  advice.value = data.slip.advice;
-  isLoading.value = false;
-}
+const {
+  data,
+  isValidating,
+  mutate: getAdvice,
+} = useSWRV("https://api.adviceslip.com/advice", fetcher);
 
-onMounted(() => {
-  getAdvice();
-});
+const advice = computed(() => data.value?.slip?.advice);
 </script>
 
 <style scoped></style>
