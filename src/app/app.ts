@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { catchError, of } from 'rxjs';
 
 type AdviceResponse = {
   slip: {
@@ -26,20 +27,21 @@ export class App implements OnInit {
   getAdvice() {
     this.isLoading.set(true);
 
-    // this.http.get(): Observable  // rxjs
     this.http
       .get<AdviceResponse>('https://api.adviceslip.com/advice', {
         timeout: 5000,
       })
-      .subscribe({
-        next: (data) => {
-          this.advice.set(data.slip.advice);
-          this.isLoading.set(false);
-        },
-        error: (error) => {
+      .pipe(
+        catchError((error) => {
           console.error(error);
-          this.isLoading.set(false);
-        },
+          return of(null);
+        }),
+      )
+      .subscribe((data) => {
+        if (data) {
+          this.advice.set(data.slip.advice);
+        }
+        this.isLoading.set(false);
       });
   }
 }
