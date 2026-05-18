@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { catchError, of } from 'rxjs';
+import { LoadingService } from './loading.service';
 
 type AdviceResponse = {
   slip: {
@@ -16,17 +17,15 @@ type AdviceResponse = {
 })
 export class App implements OnInit {
   private readonly http = inject(HttpClient);
+  protected readonly loadingService = inject(LoadingService);
 
   protected readonly advice = signal('Advice ...');
-  protected readonly isLoading = signal(false);
 
   ngOnInit() {
     this.getAdvice();
   }
 
   getAdvice() {
-    this.isLoading.set(true);
-
     this.http
       .get<AdviceResponse>('https://api.adviceslip.com/advice', {
         timeout: 5000,
@@ -41,7 +40,6 @@ export class App implements OnInit {
         if (data) {
           this.advice.set(data.slip.advice);
         }
-        this.isLoading.set(false);
       });
   }
 }
