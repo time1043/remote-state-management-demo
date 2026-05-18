@@ -1,29 +1,27 @@
-import { useEffect, useState } from "react";
+import useSWR from "swr";
+
+// const fetcher = (...args: [url: string, init?: RequestInit]) =>
+//   fetch(...args).then((res) => res.json());
+const fetcher = (...args: Parameters<typeof fetch>) =>
+  fetch(...args).then((res) => res.json());
 
 export default function App() {
-  const [advice, setAdvice] = useState("Advice ...");
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function getAdvice() {
-    setIsLoading(true);
-
-    // https://api.adviceslip.com/
-    const response = await fetch("https://api.adviceslip.com/advice");
-    const data = await response.json();
-
-    setAdvice(data.slip.advice);
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    getAdvice();
-  }, []);
+  // Trigger once when the component mounts - useSWR
+  // Trigger again when the button is clicked - mutate
+  // https://swr.vercel.app/docs/mutation#bound-mutate
+  // https://swr.vercel.app/docs/api#return-values
+  const {
+    data,
+    isValidating,
+    mutate: getAdvice,
+  } = useSWR("https://api.adviceslip.com/advice", fetcher);
+  const advice = data?.slip?.advice;
 
   return (
     <main>
       <h1>Advice App</h1>
-      <p>{isLoading ? "Loading..." : advice}</p>
-      <button onClick={getAdvice} disabled={isLoading}>
+      <p>{isValidating ? "Loading..." : advice}</p>
+      <button onClick={getAdvice} disabled={isValidating}>
         Get Advice
       </button>
     </main>
