@@ -7,15 +7,19 @@ import { Component, OnInit, signal } from '@angular/core';
 })
 export class App implements OnInit {
   protected readonly advice = signal('Advice ...');
+  protected readonly isLoading = signal(false);
 
   ngOnInit() {
     this.getAdvice();
   }
 
   async getAdvice() {
-    // https://api.adviceslip.com/
+    this.isLoading.set(true);
+
     const response = await fetch('https://api.adviceslip.com/advice');
     const data = await response.json();
+
     this.advice.set(data.slip.advice);
+    this.isLoading.set(false);
   }
 }
