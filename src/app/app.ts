@@ -1,12 +1,21 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, signal } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {
-  protected readonly title = signal('remote-state-management-demo');
+export class App implements OnInit {
+  protected readonly advice = signal('Advice ...');
+
+  ngOnInit() {
+    this.getAdvice();
+  }
+
+  async getAdvice() {
+    // https://api.adviceslip.com/
+    const response = await fetch('https://api.adviceslip.com/advice');
+    const data = await response.json();
+    this.advice.set(data.slip.advice);
+  }
 }
