@@ -1,18 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 export default function App() {
   const [advice, setAdvice] = useState("Advice ...");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
-  async function getAdvice() {
-    setIsLoading(true);
+  function getAdvice() {
+    startTransition(async () => {
+      // https://api.adviceslip.com/
+      const response = await fetch("https://api.adviceslip.com/advice");
+      const data = await response.json();
 
-    // https://api.adviceslip.com/
-    const response = await fetch("https://api.adviceslip.com/advice");
-    const data = await response.json();
-
-    setAdvice(data.slip.advice);
-    setIsLoading(false);
+      setAdvice(data.slip.advice);
+    });
   }
 
   useEffect(() => {
@@ -22,8 +21,8 @@ export default function App() {
   return (
     <main>
       <h1>Advice App</h1>
-      <p>{isLoading ? "Loading..." : advice}</p>
-      <button onClick={getAdvice} disabled={isLoading}>
+      <p>{isPending ? "Loading..." : advice}</p>
+      <button onClick={getAdvice} disabled={isPending}>
         Get Advice
       </button>
     </main>
