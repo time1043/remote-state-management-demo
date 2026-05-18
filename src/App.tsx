@@ -1,29 +1,27 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
+async function fetchAdvice() {
+  const response = await fetch("https://api.adviceslip.com/advice");
+  const data = await response.json();
+
+  return data.slip.advice;
+}
 
 export default function App() {
-  const [advice, setAdvice] = useState("Advice ...");
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function getAdvice() {
-    setIsLoading(true);
-
-    // https://api.adviceslip.com/
-    const response = await fetch("https://api.adviceslip.com/advice");
-    const data = await response.json();
-
-    setAdvice(data.slip.advice);
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    getAdvice();
-  }, []);
+  const {
+    data: advice,
+    isFetching,
+    refetch,
+  } = useQuery({
+    queryKey: ["advice"],
+    queryFn: fetchAdvice,
+  });
 
   return (
     <main>
       <h1>Advice App</h1>
-      <p>{isLoading ? "Loading..." : advice}</p>
-      <button onClick={getAdvice} disabled={isLoading}>
+      <p>{isFetching ? "Loading..." : advice}</p>
+      <button onClick={() => refetch()} disabled={isFetching}>
         Get Advice
       </button>
     </main>
